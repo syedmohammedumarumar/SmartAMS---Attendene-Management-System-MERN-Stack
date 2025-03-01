@@ -1,0 +1,71 @@
+/* Navbar container */
+.navbar {
+  width: 100%;
+  background-color: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 10px 20px; /* Added some padding for spacing */
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+}
+
+/* Main content padding to avoid overlap */
+.main-content {
+  padding-top: 70px; /* Increased to match navbar height */
+}
+
+/* Flex container for navbar */
+.navbar-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center; /* Center aligns navbar items */
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Brand logo */
+.brand-logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #007bff;
+  text-decoration: none;
+}
+
+/* Navigation links */
+.nav-links {
+  display: flex;
+  gap: 15px;
+}
+
+/* Navigation buttons */
+.nav-btn {
+  padding: 8px 15px;
+  border: 2px solid #007bff;
+  background-color: transparent;
+  color: #007bff;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: all 0.3s ease;
+}
+
+/* Active button */
+.nav-btn.active,
+.nav-btn:hover {
+  background-color: #007bff;
+  color: white;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .navbar-container {
+      flex-direction: column;
+      align-items: center;
+  }
+
+  .nav-links {
+      margin-top: 10px;
+  }
+}
