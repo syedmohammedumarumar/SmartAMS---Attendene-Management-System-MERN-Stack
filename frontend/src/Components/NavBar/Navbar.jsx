@@ -74,7 +74,7 @@ const NavBar = () => {
       // Try both possible token keys
       const token = localStorage.getItem("token") || localStorage.getItem("authToken");
       
-      await axios.get("http://localhost:5000/api/auth/logout", {
+      await axios.get("https://smartams-backend-1pdd.onrender.com/api/auth/logout", {
         headers: { Authorization: `Bearer ${token}` }
       });
 
