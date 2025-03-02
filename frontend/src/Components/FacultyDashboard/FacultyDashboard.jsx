@@ -3,7 +3,7 @@ import axios from "axios";
 import "./FacultyDashboard.css"; // We'll create this CSS file
 
 // API base URL
-const API_URL = "http://localhost:5000/api";
+const API_URL = "https://smartams-backend-1pdd.onrender.com/api";
 
 // Time slots for classes (same as in student dashboard)
 const timeSlots = [
