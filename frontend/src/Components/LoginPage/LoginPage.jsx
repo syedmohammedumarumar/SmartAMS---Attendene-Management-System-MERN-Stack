@@ -35,7 +35,7 @@ const LoginPage = () => {
     try {
       if (isLogin) {
         // Login API call
-        const response = await axios.post("http://localhost:5000/api/auth/login", {
+        const response = await axios.post("https://smartams-backend-1pdd.onrender.com/api/auth/login", {
           email: formData.email,
           password: formData.password
         });
@@ -82,7 +82,7 @@ const LoginPage = () => {
             try {
               // Set the auth token for the request
               axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
-              const userResponse = await axios.get("http://localhost:5000/api/auth/me");
+              const userResponse = await axios.get(https://smartams-backend-1pdd.onrender.com/api/auth/me");
               
               if (userResponse.data.success && userResponse.data.data) {
                 console.log("User data from /me endpoint:", userResponse.data.data);
@@ -129,7 +129,7 @@ const LoginPage = () => {
           totalStudents: parseInt(formData.totalStudents)
         };
         
-        const response = await axios.post("http://localhost:5000/api/auth/register", registerData);
+        const response = await axios.post("https://smartams-backend-1pdd.onrender.com/api/auth/register", registerData);
         
         // Show success message
         alert("Registration successful! Please login with your credentials.");
