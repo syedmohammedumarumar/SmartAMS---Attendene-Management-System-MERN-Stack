@@ -4,7 +4,7 @@ import axios from "axios";
 import "./FacultyLogin.css";
 
 // API base URL
-const API_URL = "http://localhost:5000/api";
+const API_URL = "https://smartams-backend-1pdd.onrender.com/api";
 
 const FacultyLogin = () => {
   const [isLogin, setIsLogin] = useState(true);
