@@ -82,7 +82,7 @@ const LoginPage = () => {
             try {
               // Set the auth token for the request
               axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
-              const userResponse = await axios.get(https://smartams-backend-1pdd.onrender.com/api/auth/me");
+              const userResponse = await axios.get("https://smartams-backend-1pdd.onrender.com/api/auth/me");
               
               if (userResponse.data.success && userResponse.data.data) {
                 console.log("User data from /me endpoint:", userResponse.data.data);
