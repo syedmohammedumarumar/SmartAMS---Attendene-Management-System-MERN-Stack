@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import axios from "axios";
-import "./NavBar.css";
+import "./Navbar.css";
 import logoGif from '../../assets/quick-idea.gif';
 
 const NavBar = () => {
