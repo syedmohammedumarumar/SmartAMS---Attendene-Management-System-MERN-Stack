@@ -3,7 +3,7 @@ import axios from "axios";
 import "./StudentDashboard.css";
 
 // API base URL
-const API_URL = "http://localhost:5000/api";
+const API_URL = "https://smartams-backend-1pdd.onrender.com/api";
 
 // Time slots for classes
 const timeSlots = [
