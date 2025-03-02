@@ -1,71 +1,278 @@
-/* Navbar container */
+/* Navbar Base */
 .navbar {
   width: 100%;
-  background-color: white;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  padding: 10px 20px; /* Added some padding for spacing */
+  background: linear-gradient(135deg, rgba(67, 97, 238, 0.08) 0%, rgba(247, 37, 133, 0.08) 100%);
+  box-shadow: 0px 5px 15px rgba(67, 97, 238, 0.1);
+  padding: 15px 30px;
   position: fixed;
   top: 0;
   left: 0;
   z-index: 1000;
+  transition: var(--transition);
 }
 
-/* Main content padding to avoid overlap */
-.main-content {
-  padding-top: 70px; /* Increased to match navbar height */
-}
-
-/* Flex container for navbar */
+/* Navbar Container */
 .navbar-container {
+  max-width: 1200px;
+  margin: 0 auto;
   display: flex;
   justify-content: space-between;
-  align-items: center; /* Center aligns navbar items */
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 0 20px;
+  align-items: center;
+  width: 100%;
 }
 
-/* Brand logo */
+/* Brand Logo */
 .brand-logo {
-  font-size: 1.5rem;
+  font-size: 1.8rem;
   font-weight: bold;
-  color: #007bff;
+  color: var(--primary);
   text-decoration: none;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  white-space: nowrap;
+  margin-left: 40px; /* Pushes logo to the far left */
 }
 
-/* Navigation links */
+/* Styling for GIF */
+.brand-logo img {
+  height: 40px;
+  width: auto;
+  margin-left: 5px;
+  border-radius: 30%;
+}
+
+.brand-logo:hover {
+  color: var(--secondary);
+  transform: scale(1.05);
+}
+ 
+/* Navigation Links */
 .nav-links {
   display: flex;
   gap: 15px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  margin-left: auto; /* Pushes nav links to the far right */
 }
 
-/* Navigation buttons */
+/* Navigation Buttons */
 .nav-btn {
-  padding: 8px 15px;
-  border: 2px solid #007bff;
-  background-color: transparent;
-  color: #007bff;
+  padding: 12px 20px;
+  border: none;
+  background: transparent;
+  color: var(--text-primary);
   font-size: 1rem;
-  cursor: pointer;
-  border-radius: 5px;
-  transition: all 0.3s ease;
+  font-weight: 600;
+  border-radius: var(--border-radius);
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
-/* Active button */
-.nav-btn.active,
-.nav-btn:hover {
-  background-color: #007bff;
+/* Animated Hover Effect */
+.nav-btn::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 300%;
+  height: 300%;
+  background: rgba(67, 97, 238, 0.15);
+  transition: all 0.4s ease;
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0);
+}
+
+.nav-btn:hover::before {
+  transform: translate(-50%, -50%) scale(1);
+}
+
+/* Active Button */
+.nav-btn.active {
+  background: var(--primary);
   color: white;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-  .navbar-container {
-      flex-direction: column;
-      align-items: center;
-  }
+/* Logout Button */
+.nav-btn.logout {
+  background: var(--accent);
+  color: white;
+  border-radius: var(--border-radius);
+}
 
+.nav-btn.logout:hover {
+  background: #c2185b;
+  transform: translateY(-3px);
+}
+
+/* Department Button */
+.nav-btn.department {
+  background: var(--success);
+  color: white;
+}
+
+.nav-btn.department:hover {
+  background: #32a8cf;
+  transform: translateY(-3px);
+}
+
+/* Mobile Menu Toggle Button - Hidden by default */
+.mobile-menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--primary);
+  margin-left: 15px; /* Creates space between toggle and nav links */
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+  .brand-logo {
+    font-size: 1.5rem;
+    margin-left: 0px;
+  }
+  
+  .brand-logo img {
+    height: 30px;
+  }
+  
   .nav-links {
-      margin-top: 10px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  
+  .nav-btn {
+    padding: 10px 16px;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    padding: 10px 15px;
+  }
+  
+  .mobile-menu-toggle {
+    display: block;
+  }
+  
+  .navbar-container {
+    justify-content: space-between;
+    margin: 0;
+    padding: 0 10px;
+  }
+  
+  .brand-logo {
+    font-size: 1.3rem;
+  }
+  
+  .brand-logo img {
+    height: 25px;
+    margin-left: 0px;
+  }
+  
+  .nav-links {
+    display: none;
+    width: 100%;
+    flex-direction: column;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: white;
+    box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+    padding: 15px 0;
+    z-index: 1000;
+  }
+  
+  .nav-links.active {
+    display: flex;
+    animation: slideDown 0.3s ease forwards;
+  }
+  
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .nav-btn {
+    width: 90%;
+    text-align: center;
+    margin: 5px auto;
+    padding: 12px 15px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+  }
+  
+  .nav-btn:hover {
+    background: rgba(67, 97, 238, 0.1);
+    transform: translateY(-2px);
+  }
+  
+  /* Fix special buttons in mobile view */
+  .nav-btn.logout,
+  .nav-btn.department {
+    width: 90%;
+    margin: 5px auto;
+    font-size: 1rem;
+  }
+  
+  .nav-btn.logout:hover,
+  .nav-btn.department:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
+}
+
+.no-underline {
+  text-decoration: none;
+}
+
+@media (max-width: 480px) {
+  .navbar {
+    padding: 8px 10px;
+  }
+  
+  .brand-logo {
+    font-size: 1.1rem;
+    margin-left: 0;
+  }
+  
+  .brand-logo img {
+    height: 20px;
+  }
+  
+  /* Improved mobile menu toggle */
+  .mobile-menu-toggle {
+    padding: 8px;
+    border-radius: 4px;
+  }
+  
+  .mobile-menu-toggle:active {
+    background: rgba(67, 97, 238, 0.1);
+  }
+  
+  /* Enhanced mobile nav buttons */
+  .nav-links {
+    padding: 10px 0;
+  }
+  
+  .nav-btn {
+    padding: 12px 15px;
+    margin: 4px auto;
+    font-weight: 500;
+    border-radius: 6px;
   }
 }

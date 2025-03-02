@@ -1,32 +1,39 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import axios from "axios";
+import "./NavBar.css";
+import logoGif from '../../assets/quick-idea.gif';
 
 const NavBar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userRole, setUserRole] = useState("");
-
-  // Check if user is logged in on component mount and when location changes
-  useEffect(() => {
-    checkLoginStatus();
-  }, [location.pathname]); // Add dependency to re-check when route changes
+  const [menuOpen, setMenuOpen] = useState(false);
 
   // Function to check login status
   const checkLoginStatus = () => {
-    // Look for token using BOTH possible keys (for compatibility)
+    // Check for both token storage methods
     const token = localStorage.getItem("token") || localStorage.getItem("authToken");
     const userDataString = localStorage.getItem("userData");
-    
+
     if (token && userDataString) {
       setIsLoggedIn(true);
       try {
+        // Parse userData which could be in different formats
         const userData = JSON.parse(userDataString);
-        // Extract role correctly from either nested or flat user object
-        const role = userData.user?.role || userData.role || "";
+        
+        // Handle different data structures that might exist in localStorage
+        let role = "";
+        if (userData.user && userData.user.role) {
+          role = userData.user.role;
+        } else if (userData.role) {
+          role = userData.role;
+        }
+        
+        // Store the role regardless of case
         setUserRole(role);
-        console.log("User role detected:", role);
+        console.log("User role detected:", role); // Debug logging
       } catch (e) {
         console.error("Error parsing user data:", e);
       }
@@ -36,154 +43,131 @@ const NavBar = () => {
     }
   };
 
-  const handleLogout = async () => {
-    try {
-      // Determine which token key is being used
-      const token = localStorage.getItem("token") || localStorage.getItem("authToken");
-      
-      // Call the logout API with the correct token
-      await axios.get("http://localhost:5000/api/auth/logout", {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      
-      // Clear both possible token keys and userData
-      localStorage.removeItem("token");
-      localStorage.removeItem("authToken");
-      localStorage.removeItem("userData");
-      
-      // Update state
-      setIsLoggedIn(false);
-      setUserRole("");
-      
-      // Redirect to login page
-      navigate("/");
-      
-      // Optional: Show logout success message
-      alert("You have been successfully logged out.");
-    } catch (error) {
-      console.error("Logout error:", error);
-      
-      // Even if API call fails, we should still log out locally
-      localStorage.removeItem("token");
-      localStorage.removeItem("authToken");
-      localStorage.removeItem("userData");
-      navigate("/");
-    }
-  };
-
-  // Listen for storage events (for multi-tab support)
+  // Check login status on component mount and when location changes
   useEffect(() => {
-    const handleStorageChange = () => {
-      checkLoginStatus();
-    };
-    
-    window.addEventListener('storage', handleStorageChange);
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-    };
-  }, []);
+    checkLoginStatus();
+  }, [location.pathname]);
 
-  // Custom event listener for login success
+  // Listen for both loginSuccess events
   useEffect(() => {
     const handleLoginSuccess = () => {
       checkLoginStatus();
     };
-    
-    window.addEventListener('loginSuccess', handleLoginSuccess);
+
+    window.addEventListener("loginSuccess", handleLoginSuccess);
+    // Handle the case if a different event is dispatched from faculty login
+    window.addEventListener("facultyLoginSuccess", handleLoginSuccess);
+
     return () => {
-      window.removeEventListener('loginSuccess', handleLoginSuccess);
+      window.removeEventListener("loginSuccess", handleLoginSuccess);
+      window.removeEventListener("facultyLoginSuccess", handleLoginSuccess);
     };
   }, []);
 
+  // Close menu when changing routes
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [location.pathname]);
+
+  const handleLogout = async () => {
+    try {
+      // Try both possible token keys
+      const token = localStorage.getItem("token") || localStorage.getItem("authToken");
+      
+      await axios.get("http://localhost:5000/api/auth/logout", {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      localStorage.clear();
+      setIsLoggedIn(false);
+      setUserRole("");
+      navigate("/");
+      alert("You have been successfully logged out.");
+    } catch (error) {
+      console.error("Logout error:", error);
+      localStorage.clear();
+      navigate("/");
+    }
+  };
+
+  const toggleMenu = () => {
+    setMenuOpen(!menuOpen);
+  };
+
+  // Helper function to check if user is a faculty (case-insensitive)
+  const isFaculty = () => {
+    return userRole && userRole.toLowerCase() === "faculty";
+  };
+
+  // Helper function to check if user is a CR (case-insensitive)
+  const isCR = () => {
+    return userRole && (userRole.toLowerCase() === "cr" || userRole.toLowerCase() === "class representative");
+  };
+
   return (
-    <nav className="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
-      <div className="container">
+    <nav className="navbar">
+      <div className="navbar-container">
         {/* Brand Logo */}
-        <a className="navbar-brand fw-bold text-primary" href="/">
-          Attendance Visualizer
+        <a className="brand-logo" href="/">
+          Smart AMS <img src={logoGif} alt="gif" />
         </a>
 
-        {/* Navbar Toggle Button (for Mobile View) */}
-        <button
-          className="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNav"
-          aria-controls="navbarNav"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span className="navbar-toggler-icon"></span>
-        </button>
+        {/* Navigation Buttons */}
+        <div className={`nav-links ${menuOpen ? 'active' : ''}`}>
+          <Link to={'/'} className="nav-btn home-button no-underline">Home</Link>
 
-        {/* Navbar Links */}
-        <div className="collapse navbar-collapse" id="navbarNav">
-          {/* Buttons pushed to the right using ms-auto */}
-          <div className="ms-auto d-flex">
-            {/* CR Dashboard Button */}
-            {isLoggedIn && (userRole.toLowerCase() === "cr" || userRole.toLowerCase() === "class representative") && (
-              <button
-                className={`btn mx-2 ${
-                  location.pathname === "/cr-dashboard" ? "btn-primary" : "btn-outline-primary"
-                }`}
-                onClick={() => navigate("/cr-dashboard")}
-              >
-                Dashboard
-              </button>
-            )}
-
-            {/* Faculty Dashboard Button */}
-            {isLoggedIn && (userRole.toLowerCase() === "faculty") && (
-              <button
-                className={`btn mx-2 ${
-                  location.pathname === "/faculty/dashboard" ? "btn-primary" : "btn-outline-primary"
-                }`}
-                onClick={() => navigate("/faculty/dashboard")}
-              >
-                Dashboard
-              </button>
-            )}
-            
-            {/* Student Button (visible to all) */}
+          {/* CR Dashboard Button */}
+          {isLoggedIn && isCR() && (
             <button
-              className={`btn mx-2 ${
-                location.pathname === "/student" ? "btn-primary" : "btn-outline-primary"
-              }`}
-              onClick={() => navigate("/student")}
+              className={`nav-btn ${location.pathname === "/cr-dashboard" ? "active" : ""}`}
+              onClick={() => navigate("/cr-dashboard")}
             >
-              Student
+              CR Dashboard
             </button>
+          )}
 
-            {/* Faculty Button (visible to all) */}
+          {/* Faculty Dashboard Button */}
+          {isLoggedIn && isFaculty() && (
             <button
-              className={`btn mx-2 ${
-                location.pathname === "/faculty" ? "btn-primary" : "btn-outline-primary"
-              }`}
-              onClick={() => navigate("/faculty")}
+              className={`nav-btn ${location.pathname.includes("/faculty/dashboard") ? "active" : ""}`}
+              onClick={() => navigate("/faculty/dashboard")}
             >
-              Faculty
+              Faculty Dashboard
             </button>
-            
-            {/* Login/Logout Button */}
-            {isLoggedIn ? (
-              <button
-                className="btn btn-danger mx-2"
-                onClick={handleLogout}
-              >
-                Logout {userRole && `(${userRole})`}
-              </button>
-            ) : (
-              <button
-                className="btn btn-success mx-2"
-                onClick={() => navigate("/")}
-              >
-                By Dept Of AIML
-              </button>
-            )}
-          </div>
+          )}
+
+          {/* Student Button */}
+          <button
+            className={`nav-btn ${location.pathname === "/student" ? "active" : ""}`}
+            onClick={() => navigate("/student")}
+          >
+            Student
+          </button>
+
+          {/* Faculty Button */}
+          <button
+            className={`nav-btn ${location.pathname === "/faculty" ? "active" : ""}`}
+            onClick={() => navigate("/faculty")}
+          >
+            Faculty
+          </button>
+
+          {/* Logout or Department Button */}
+          {isLoggedIn ? (
+            <button className="nav-btn logout" onClick={handleLogout}>
+              Logout {userRole && `(${userRole})`}
+            </button>
+          ) : (
+            <button className="nav-btn department" onClick={() => navigate("/")}>
+              Dept Of AIML
+            </button>
+          )}
         </div>
+
+        {/* Mobile Menu Toggle */}
+        <button className="mobile-menu-toggle" onClick={toggleMenu}>
+          {menuOpen ? "✕" : "☰"}
+        </button>
       </div>
     </nav>
   );
